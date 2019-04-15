@@ -145,6 +145,7 @@ function show_loader(){
 //HIDE LOADER
 function hide_loader(){
 	$('#loader_proses').transition('fade');
+	$('#loader_proses').remove();
 
 }
 
