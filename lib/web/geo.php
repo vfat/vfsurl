@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -52,7 +52,7 @@ class Geo extends \Prefab {
 	*	@param $ip string
 	**/
 	function location($ip=NULL) {
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		$web=\Web::instance();
 		if (!$ip)
 			$ip=$fw->IP;
@@ -64,8 +64,11 @@ class Geo extends \Prefab {
 			$out=@geoip_record_by_name($ip)) {
 			$out['request']=$ip;
 			$out['region_code']=$out['region'];
-			$out['region_name']=geoip_region_name_by_code(
-				$out['country_code'],$out['region']);
+			$out['region_name']='';
+			if (!empty($out['country_code']) && !empty($out['region']))
+				$out['region_name']=geoip_region_name_by_code(
+					$out['country_code'],$out['region']
+				);
 			unset($out['country_code3'],$out['region'],$out['postal_code']);
 			return $out;
 		}
@@ -90,7 +93,7 @@ class Geo extends \Prefab {
 	*	@param $key string
 	**/
 	function weather($latitude,$longitude,$key) {
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		$web=\Web::instance();
 		$query=[
 			'lat'=>$latitude,

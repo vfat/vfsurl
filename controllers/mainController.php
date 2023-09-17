@@ -14,7 +14,7 @@ class mainController
 
 	function __construct()
 	{
-		$vf=Core::instance();
+		$vf=Base::instance();
 		$view=new View;
 
 		$this->vf=$vf;

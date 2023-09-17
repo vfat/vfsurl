@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -91,14 +91,14 @@ class Mapper extends \DB\Cursor {
 	*	@return static
 	*	@param $row array
 	**/
-	protected function factory($row) {
+	function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
 		foreach ($row as $key=>$val)
 			$mapper->document[$key]=$val;
 		$mapper->query=[clone($mapper)];
 		if (isset($mapper->trigger['load']))
-			\Core::instance()->call($mapper->trigger['load'],$mapper);
+			\Base::instance()->call($mapper->trigger['load'],$mapper);
 		return $mapper;
 	}
 
@@ -119,7 +119,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $fields string
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function select($fields=NULL,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -130,10 +130,13 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		];
-		$fw=\Core::instance();
+		$tag='';
+		if (is_array($ttl))
+			list($ttl,$tag)=$ttl;
+		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		if (!($cached=$cache->exists($hash=$fw->hash($this->db->dsn().
-			$fw->stringify([$fields,$filter,$options])).'.mongo',
+			$fw->stringify([$fields,$filter,$options])).($tag?'.'.$tag:'').'.mongo',
 			$result)) || !$ttl || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
 				$grp=$this->collection->group(
@@ -147,7 +150,7 @@ class Mapper extends \DB\Cursor {
 				);
 				$tmp=$this->db->selectcollection(
 					$fw->HOST.'.'.$fw->BASE.'.'.
-					uniqid(NULL,TRUE).'.tmp'
+					uniqid('',TRUE).'.tmp'
 				);
 				$tmp->batchinsert($grp['retval'],['w'=>1]);
 				$filter=[];
@@ -194,7 +197,7 @@ class Mapper extends \DB\Cursor {
 	*	@return static[]
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -213,13 +216,16 @@ class Mapper extends \DB\Cursor {
 	*	@return int
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function count($filter=NULL,array $options=NULL,$ttl=0) {
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		$cache=\Cache::instance();
+		$tag='';
+		if (is_array($ttl))
+			list($ttl,$tag)=$ttl;
 		if (!($cached=$cache->exists($hash=$fw->hash($fw->stringify(
-			[$filter])).'.mongo',$result)) || !$ttl ||
+			[$filter])).($tag?'.'.$tag:'').'.mongo',$result)) || !$ttl ||
 			$cached[0]+$ttl<microtime(TRUE)) {
 			$result=$this->collection->count($filter?:[]);
 			if ($fw->CACHE && $ttl)
@@ -238,7 +244,7 @@ class Mapper extends \DB\Cursor {
 	function skip($ofs=1) {
 		$this->document=($out=parent::skip($ofs))?$out->document:[];
 		if ($this->document && isset($this->trigger['load']))
-			\Core::instance()->call($this->trigger['load'],$this);
+			\Base::instance()->call($this->trigger['load'],$this);
 		return $out;
 	}
 
@@ -250,7 +256,7 @@ class Mapper extends \DB\Cursor {
 		if (isset($this->document['_id']))
 			return $this->update();
 		if (isset($this->trigger['beforeinsert']) &&
-			\Core::instance()->call($this->trigger['beforeinsert'],
+			\Base::instance()->call($this->trigger['beforeinsert'],
 				[$this,['_id'=>$this->document['_id']]])===FALSE)
 			return $this->document;
 		if ($this->legacy) {
@@ -262,7 +268,7 @@ class Mapper extends \DB\Cursor {
 			$pkey=['_id'=>$result->getinsertedid()];
 		}
 		if (isset($this->trigger['afterinsert']))
-			\Core::instance()->call($this->trigger['afterinsert'],
+			\Base::instance()->call($this->trigger['afterinsert'],
 				[$this,$pkey]);
 		$this->load($pkey);
 		return $this->document;
@@ -275,7 +281,7 @@ class Mapper extends \DB\Cursor {
 	function update() {
 		$pkey=['_id'=>$this->document['_id']];
 		if (isset($this->trigger['beforeupdate']) &&
-			\Core::instance()->call($this->trigger['beforeupdate'],
+			\Base::instance()->call($this->trigger['beforeupdate'],
 				[$this,$pkey])===FALSE)
 			return $this->document;
 		$upsert=['upsert'=>TRUE];
@@ -284,7 +290,7 @@ class Mapper extends \DB\Cursor {
 		else
 			$this->collection->replaceone($pkey,$this->document,$upsert);
 		if (isset($this->trigger['afterupdate']))
-			\Core::instance()->call($this->trigger['afterupdate'],
+			\Base::instance()->call($this->trigger['afterupdate'],
 				[$this,$pkey]);
 		return $this->document;
 	}
@@ -309,7 +315,7 @@ class Mapper extends \DB\Cursor {
 		}
 		$pkey=['_id'=>$this->document['_id']];
 		if (isset($this->trigger['beforeerase']) &&
-			\Core::instance()->call($this->trigger['beforeerase'],
+			\Base::instance()->call($this->trigger['beforeerase'],
 				[$this,$pkey])===FALSE)
 			return FALSE;
 		$result=$this->legacy?
@@ -317,7 +323,7 @@ class Mapper extends \DB\Cursor {
 			$this->collection->deleteone(['_id'=>$this->document['_id']]);
 		parent::erase();
 		if (isset($this->trigger['aftererase']))
-			\Core::instance()->call($this->trigger['aftererase'],
+			\Base::instance()->call($this->trigger['aftererase'],
 				[$this,$pkey]);
 		return $result;
 	}
@@ -339,7 +345,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function copyfrom($var,$func=NULL) {
 		if (is_string($var))
-			$var=\Core::instance()->$var;
+			$var=\Base::instance()->$var;
 		if ($func)
 			$var=call_user_func($func,$var);
 		foreach ($var as $key=>$val)
@@ -352,7 +358,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $key string
 	**/
 	function copyto($key) {
-		$var=&\Core::instance()->ref($key);
+		$var=&\Base::instance()->ref($key);
 		foreach ($this->document as $key=>$field)
 			$var[$key]=$field;
 	}

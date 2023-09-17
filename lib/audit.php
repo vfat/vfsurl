@@ -1,5 +1,25 @@
 <?php
 
+/*
+
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
+
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 //! Data validator
 class Audit extends Prefab {
 
@@ -16,7 +36,8 @@ class Audit extends Prefab {
 	*	@param $str string
 	**/
 	function url($str) {
-		return is_string(filter_var($str,FILTER_VALIDATE_URL));
+		return is_string(filter_var($str,FILTER_VALIDATE_URL))
+			&& !preg_match('/^(javascript|php):\/\/.*$/i', $str);
 	}
 
 	/**
@@ -88,7 +109,7 @@ class Audit extends Prefab {
 	**/
 	function isdesktop($agent=NULL) {
 		if (!isset($agent))
-			$agent=Core::instance()->AGENT;
+			$agent=Base::instance()->AGENT;
 		return (bool)preg_match('/('.self::UA_Desktop.')/i',$agent) &&
 			!$this->ismobile($agent);
 	}
@@ -100,7 +121,7 @@ class Audit extends Prefab {
 	**/
 	function ismobile($agent=NULL) {
 		if (!isset($agent))
-			$agent=Core::instance()->AGENT;
+			$agent=Base::instance()->AGENT;
 		return (bool)preg_match('/('.self::UA_Mobile.')/i',$agent);
 	}
 
@@ -111,7 +132,7 @@ class Audit extends Prefab {
 	**/
 	function isbot($agent=NULL) {
 		if (!isset($agent))
-			$agent=Core::instance()->AGENT;
+			$agent=Base::instance()->AGENT;
 		return (bool)preg_match('/('.self::UA_Bot.')/i',$agent);
 	}
 
@@ -125,7 +146,7 @@ class Audit extends Prefab {
 			return FALSE;
 		$id=strrev($id);
 		$sum=0;
-		for ($i=0,$l=strlen($id);$i<$l;$i++)
+		for ($i=0,$l=strlen($id);$i<$l;++$i)
 			$sum+=$id[$i]+$i%2*(($id[$i]>4)*-4+$id[$i]%5);
 		return !($sum%10);
 	}

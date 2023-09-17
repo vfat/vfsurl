@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -57,19 +57,22 @@ abstract class Magic implements ArrayAccess {
 	*	@return mixed
 	*	@param $key string
 	**/
+	#[\ReturnTypeWillChange]
 	function offsetexists($key) {
-		return Core::instance()->visible($this,$key)?
-			isset($this->$key):$this->exists($key);
+		return Base::instance()->visible($this,$key)?
+			isset($this->$key):
+			($this->exists($key) && $this->get($key)!==NULL);
 	}
 
 	/**
 	*	Convenience method for assigning property value
 	*	@return mixed
 	*	@param $key string
-	*	@param $val scalar
+	*	@param $val mixed
 	**/
+	#[\ReturnTypeWillChange]
 	function offsetset($key,$val) {
-		return Core::instance()->visible($this,$key)?
+		return Base::instance()->visible($this,$key)?
 			($this->$key=$val):$this->set($key,$val);
 	}
 
@@ -78,8 +81,9 @@ abstract class Magic implements ArrayAccess {
 	*	@return mixed
 	*	@param $key string
 	**/
+	#[\ReturnTypeWillChange]
 	function &offsetget($key) {
-		if (Core::instance()->visible($this,$key))
+		if (Base::instance()->visible($this,$key))
 			$val=&$this->$key;
 		else
 			$val=&$this->get($key);
@@ -91,8 +95,9 @@ abstract class Magic implements ArrayAccess {
 	*	@return NULL
 	*	@param $key string
 	**/
+	#[\ReturnTypeWillChange]
 	function offsetunset($key) {
-		if (Core::instance()->visible($this,$key))
+		if (Base::instance()->visible($this,$key))
 			unset($this->$key);
 		else
 			$this->clear($key);
@@ -111,7 +116,7 @@ abstract class Magic implements ArrayAccess {
 	*	Alias for offsetset()
 	*	@return mixed
 	*	@param $key string
-	*	@param $val scalar
+	*	@param $val mixed
 	**/
 	function __set($key,$val) {
 		return $this->offsetset($key,$val);
@@ -129,7 +134,6 @@ abstract class Magic implements ArrayAccess {
 
 	/**
 	*	Alias for offsetunset()
-	*	@return NULL
 	*	@param $key string
 	**/
 	function __unset($key) {

@@ -4,7 +4,7 @@ date_default_timezone_set('asia/jakarta');
 
 
 
-$vf=require('lib/core.php');
+$vf=require('lib/base.php');
 
 /*
 =============

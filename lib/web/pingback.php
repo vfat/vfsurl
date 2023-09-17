@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -62,7 +62,7 @@ class Pingback extends \Prefab {
 	*	@param $source string
 	**/
 	function inspect($source) {
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		$web=\Web::instance();
 		$parts=parse_url($source);
 		if (empty($parts['scheme']) || empty($parts['host']) ||
@@ -108,7 +108,7 @@ class Pingback extends \Prefab {
 	*	@param $path string
 	**/
 	function listen($func,$path=NULL) {
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		if (PHP_SAPI!='cli') {
 			header('X-Powered-By: '.$fw->PACKAGE);
 			header('Content-Type: application/xml; '.

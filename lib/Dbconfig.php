@@ -13,7 +13,7 @@ class Dbconfig
 	}	
 
 	public function getKoneksi() {
-		$vf=Core::instance();	
+		$vf=Base::instance();	
 		try{
 			
 			$db = new PDO($vf->db_dns,$vf->db_user,$vf->db_pass);

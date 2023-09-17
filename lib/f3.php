@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -35,7 +35,7 @@ class F3 {
 	**/
 	static function __callstatic($func,array $args) {
 		if (!self::$fw)
-			self::$fw=Core::instance();
+			self::$fw=Base::instance();
 		return call_user_func_array([self::$fw,$func],$args);
 	}
 

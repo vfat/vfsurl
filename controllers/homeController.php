@@ -18,7 +18,6 @@ class homeController extends mainController
 			$payload=array(
 				'iss' => $_SERVER['HTTP_USER_AGENT'],
 				'aud' => $_SERVER['HTTP_HOST'],
-				'iat' => date('Y-m-d H:i:s'),
 				'event_uid' => $event_uid,
 				'live' => $live		
 				);
@@ -64,6 +63,15 @@ class homeController extends mainController
 			echo $e->getMessage();
 		}
 		
+	}
+
+	function tes_uuid($vf)
+	{
+		$uid=new UUID;
+		$uid1=$uid->v4();
+		echo $uid1.'<br>';
+		$uid2=$uid->v5($uid1,'sssss');
+		echo $uid2.'<br>';
 	}
 
 

@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -67,7 +67,7 @@ class Session extends Mapper {
 		if ($this->dry())
 			return '';
 		if ($this->get('ip')!=$this->_ip || $this->get('agent')!=$this->_agent) {
-			$fw=\Core::instance();
+			$fw=\Base::instance();
 			if (!isset($this->onsuspect) ||
 				$fw->call($this->onsuspect,[$this,$id])===FALSE) {
 				// NB: `session_destroy` can't be called at that stage;
@@ -178,9 +178,13 @@ class Session extends Mapper {
 			[$this,'cleanup']
 		);
 		register_shutdown_function('session_commit');
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		$headers=$fw->HEADERS;
-		$this->_csrf=$fw->SEED.'.'.$fw->hash(mt_rand());
+		$this->_csrf=$fw->hash($fw->SEED.
+			extension_loaded('openssl')?
+				implode(unpack('L',openssl_random_pseudo_bytes(4))):
+				mt_rand()
+			);
 		if ($key)
 			$fw->$key=$this->_csrf;
 		$this->_agent=isset($headers['User-Agent'])?$headers['User-Agent']:'';

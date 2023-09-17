@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -36,7 +36,7 @@ class Recaptcha {
 	 *	@return bool
 	 **/
 	static function verify($secret,$response=NULL) {
-		$fw=\Core::instance();
+		$fw=\Base::instance();
 		if (!isset($response))
 			$response=$fw->{'POST.g-recaptcha-response'};
 		if (!$response)

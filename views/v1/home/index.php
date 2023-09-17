@@ -34,33 +34,26 @@
 <script type="text/javascript">
 var numRow=0;
 var host = "<?php echo $host; ?>";
-
 $('.menu .item').tab();
-
 function proses_url(evt, act=""){
 	var url_original=$('input[name=url]').val();
 	
-
 	if(evt['key']=='Enter' || act=='submit')
 	{
 		if(url_original!='' && urlValidator(url_original))
 		{
 			$('.url').removeClass('error');
 			show_loader();
-
 			var short_url = simpleUIDGenerator();
 			var token = '<?php echo $token; ?>';
 			var event_uid = '<?php echo $event_uid; ?>';
-
 			var dataUrl = {'short_url':short_url, 'origin_url':url_original, 'token':token, 'event_uid':event_uid};
-
 			//console.log(dataUrl);
 			$.ajax({
 				type: "POST",
 				url: "<?php echo $BASE.'/'; ?>api/add-url/<?php echo $token; ?>",
 				data: dataUrl, 
 				cache: false,
-
 				success: function(msg){
 					var psn=JSON.parse(msg);
 					if(psn.success==false)
@@ -72,13 +65,11 @@ function proses_url(evt, act=""){
 						}
 					}
 					else{
-
 						hide_loader();
 						$('input[name=url]').val('');
 						tambah_notif('positive','BERHASIL!!','URL ANDA SIAP <a href="<?php echo $BASE."/"; ?>'+short_url+'" target="_blank" rel="external nofollow">http://'+host+'<?php echo $BASE."/"; ?>'+short_url+'</a>');
 						get_list_url();
 					}
-
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
 					alert('Terjadi Kesalahan => '+xhr.status+' : '+thrownError);        
@@ -98,17 +89,13 @@ function proses_url(evt, act=""){
 			tambah_notif('negative','MAAF..','MASUKAN URL TARGET TERLEBIH DAHULU..');
 		}		
 	}
-
 	
 	
 }
-
-
 //HAPUS NOTIF
 function hapus_notif(val){
 	$('#'+val).transition('fade');
 }
-
 //TAMBAH NOTIF
 function tambah_notif(tipe='info', judul='Hai!' ,konten='...'){
 	
@@ -121,10 +108,8 @@ function tambah_notif(tipe='info', judul='Hai!' ,konten='...'){
 		notif+= '</div>';
 		notif+= '<p>'+konten+'</p>';
 		notif+= '</div>';
-
 	wrapper.append(notif);	
 }
-
 //TAMPILKAN LOADER
 function show_loader(){
 	var wrapper=$('#notif');
@@ -137,18 +122,13 @@ function show_loader(){
 		notif+= '<p>Proses pemendekan url sedang dilakukan.</p>';
 		notif+= '</div>';
 		notif+= '</div>';
-
 	wrapper.append(notif);
-
 }
-
 //HIDE LOADER
 function hide_loader(){
 	$('#loader_proses').transition('fade');
 	$('#loader_proses').remove();
-
 }
-
 //URL VALIDATOR
 function urlValidator(val) {
 	var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -159,7 +139,6 @@ function urlValidator(val) {
 		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
 	return !!pattern.test(val);
 }
-
 //SIMPLE UID GENERATOR
 function simpleUIDGenerator() {
     var firstPart = (Math.random() * 46656) | 0;
@@ -168,13 +147,10 @@ function simpleUIDGenerator() {
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
 }
-
-
 $(document).ready(function() {
 	get_list_url();
 	 
 });
-
 //LIST DATA URL
 function get_list_url(){
 	
@@ -205,17 +181,12 @@ function get_list_url(){
 						list_url += '<div class="description">'+konten[i].origin_url+'</div>';
 						list_url += '</div>';
 						list_url += '</div>';
-
 					$(wrapper).append(list_url);
 				};
-
 			}
-
-
 		}
 	});	
 }
-
 function delete_url(short_url)
 {
 	$.ajax({
@@ -227,5 +198,4 @@ function delete_url(short_url)
 		}
 	});		
 }
-
 </script>

@@ -13,7 +13,7 @@ class mainApi
 
 	function __construct()
 	{
-		$vf=Core::instance();
+		$vf=Base::instance();
 
 		$this->vf=$vf;
 		$ss=new safeString;$jwt=new JWT;$jwtkey = date('dmY');
